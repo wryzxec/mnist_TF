@@ -35,20 +35,26 @@ class MnistDataHandler:
             images.append([0] * rows * cols)
         for i in range(size):
             img = np.array(image_data[i * rows * cols:(i + 1) * rows * cols])
-            img = img.reshape(28, 28)
             images[i][:] = img            
         
-        return images, labels
+        return images, np.array(labels)
     
     def load_training_data(self):
         x_train, y_train = self.read_images_labels(self.training_images_filepath, self.training_labels_filepath)
+        x_train = np.reshape(x_train, (-1, 28*28))
+
         return x_train, y_train
     
     def load_test_data(self):
         x_test, y_test = self.read_images_labels(self.test_images_filepath, self.test_labels_filepath)
+        x_test = np.reshape(x_test, (-1, 28*28))
+
         return x_test, y_test
     
     def show_images(self, images, title_texts):
+
+        images = np.reshape(images, (np.shape(images)[0], 28, 28))
+
         cols = 5
         rows = int(len(images)/cols) + 1
         plt.figure(figsize=(5,5))
