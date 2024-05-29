@@ -18,11 +18,10 @@ class NeuralNetwork:
             Dense(40, activation = 'relu'),
             Dense(20, activation = 'relu'),
             Dense(10, activation = 'linear')
-        ]
-        )
+        ])
         return model
     
-    def compile_model(self, model, x_train, y_train):
+    def compile_model(self, model):
         model.compile(
             loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             optimizer = tf.keras.optimizers.Adam(0.001),
@@ -36,17 +35,19 @@ class NeuralNetwork:
         return history
     
     def plot_loss(self, history):
-        
         losses = history.history['loss']
         epochs = range(1, len(losses) + 1)
+        
+        loss_plot = plt.figure()
+        ax = loss_plot.add_subplot(1,1,1)
 
-        plt.figure(figsize = (5, 3))
-        plt.plot(epochs, losses, label = 'Training Loss')
-        plt.title('Training Loss vs Epochs')
-        plt.xlabel('Epochs')
-        plt.ylabel('Loss')
-        plt.show()
-    
+        ax.plot(epochs, losses, label='Training Loss')
+        ax.set_title('Training Loss vs Epochs')
+        ax.set_xlabel('Epochs')
+        ax.set_ylabel('Loss')
+
+        return loss_plot
+
     def get_model_accuracy(self, predictions, y_test):
         correct_predictions = 0
         for i, prediction in enumerate(predictions): 
@@ -78,10 +79,8 @@ def main():
     neural_network = NeuralNetwork()
     model = neural_network.create_model()
 
-    neural_network.compile_model(model, x_train, y_train)
+    neural_network.compile_model(model)
     history = neural_network.train_model_and_get_history(model, x_train, y_train)
-
-    neural_network.plot_loss(history)
 
     prediction = model.predict(np.reshape(x_test[1], (1, 28*28)))
     print(np.argmax(prediction))
@@ -92,8 +91,10 @@ def main():
     print('Accuracy: ', accuracy)
 
     incorrectly_predicted_images, incorrectly_predicted_labels = neural_network.get_incorrectly_predicted_images(predictions, x_test, y_test, 10)
-    mnist_data_handler.show_images(incorrectly_predicted_images[:10], incorrectly_predicted_labels[:10])
-            
+    mnist_data_handler.plot_images(incorrectly_predicted_images, incorrectly_predicted_labels)
+    neural_network.plot_loss(history)
+
+    plt.show()
 
 if __name__ == "__main__":
     main()

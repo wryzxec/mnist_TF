@@ -51,26 +51,31 @@ class MnistDataHandler:
 
         return x_test, y_test
     
-    def show_images(self, images, title_texts):
+    def plot_images(self, images, title_texts):
 
         images = np.reshape(images, (np.shape(images)[0], 28, 28))
 
         cols = 5
-        rows = int(len(images)/cols) + 1
-        plt.figure(figsize=(5,5))
-        plt.subplots_adjust(hspace=1) 
-        
+        rows = int(len(images)/cols) + 1 
+
+        images_plot = plt.figure(figsize=(5,5))
+        images_plot.subplots_adjust(hspace = 1)
+
         index = 1    
         for i in range(len(images)):        
             image = images[i]        
             title_text = title_texts[i]
-            plt.subplot(rows, cols, index)
-            plt.axis('off')        
-            plt.imshow(image, cmap=plt.cm.gray)
+            image_subplot = plt.subplot(rows, cols, index)
+            image_subplot.axis('off')
+            image_subplot.imshow(image, cmap=plt.cm.gray)
+            
             if (title_text != ''):
-                plt.title(title_text, fontsize = 15);        
+                image_subplot.set_title(title_text, fontsize = 15)
+            
+            images_plot.add_subplot(image_subplot)
             index += 1
-        plt.show()
+        
+        return images_plot
     
     def generate_random_training_samples(self, sample_count, x_train, y_train):
         
@@ -87,7 +92,9 @@ def main():
     mnist_data_handler = MnistDataHandler()
     x_train, y_train = mnist_data_handler.load_training_data()
     images_to_show, titles_to_show = mnist_data_handler.generate_random_training_samples(20, x_train, y_train)
-    mnist_data_handler.show_images(images_to_show, titles_to_show)
+    mnist_data_handler.plot_images(images_to_show, titles_to_show)
+
+    plt.show()
 
 if __name__ == "__main__":
     main()
